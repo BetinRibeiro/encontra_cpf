@@ -21,7 +21,7 @@
                     <div class="form-group">
                         <input type="text" id="cpfInput" placeholder="Digite o CPF inválido">
                     </div>
-                    <button  type="button" class="btn btn-success" onclick="encontrarCPFValido()">Encontrar CPF Válido</button>
+                    <button  type="button" class="btn btn-success" onclick="encontrarCPFsValidos()">Encontrar CPF Válido</button>
                   </form>
                 </div>
               </div>
@@ -31,7 +31,7 @@
           <div class="row border">
             <div class="col-md-12">
                 <p id="resultado"></p>
-              <h1 id="resultado" class="text-center"></h1>
+              <div id="resultados" class="text-center"></div>
             </div>
           </div>
         </div>
@@ -39,22 +39,38 @@
     
 
     <script>
-        function encontrarCPFValido() {
-            var cpfInvalido = document.getElementById("cpfInput").value;
-            var cpfValido = encontrarCPFFunc(cpfInvalido);
-            
-            var resultadoElement = document.getElementById("resultado");
-            resultadoElement.textContent = cpfValido;
-        }
+        function encontrarCPFsValidos() {
+        var cpfInvalido = document.getElementById("cpfInput").value;
+        var cpfsValidos = encontrarCPFsFunc(cpfInvalido);
 
-        function encontrarCPFFunc(cpfInvalido) {
+        // var resultadoElement = document.getElementById("resultados");
+    var resultadoElement = document.getElementById("resultados");
+        
+        // Limpa resultados anteriores
+        console.log(cpfsValidos);
+        resultadoElement.innerHTML = "";
+        cpfsValidos.forEach(function(cpf) {
+        var novoParagrafo = document.createElement("p");
+        novoParagrafo.textContent = cpf;
+        resultadoElement.appendChild(novoParagrafo);
+    });
+        // Adiciona cada CPF válido como um novo parágrafo
+        // cpfsValidos.forEach(function(cpf) {
+        //     var novoParagrafo = document.createElement("p");
+        //     novoParagrafo.textContent = cpf;
+        //     resultadoElement.appendChild(novoParagrafo);
+        // });
+    }
+
+        function encontrarCPFsFunc(cpfInvalido) {
             cpfInvalido = cpfInvalido.replace(/\D/g, ''); // Remove caracteres não numéricos
             if (cpfInvalido.length !== 11) {
-                return "CPF inválido: deve conter 11 dígitos.";
+                return ["CPF inválido: deve conter 11 dígitos."];
             }
-            
+
             var cpfLista = cpfInvalido.split('');
             var digitosPossiveis = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+            var cpfsValidos = [];
 
             for (var i = 0; i < 11; i++) {
                 for (var j = 0; j < digitosPossiveis.length; j++) {
@@ -63,13 +79,17 @@
                     cpfTentativa = cpfTentativa.join(''); // Converte de volta para string
 
                     if (validaCPF(cpfTentativa)) {
-                    var cpfFormatado = mascaraCPF(cpfTentativa);    
-                        return "CPF válido encontrado: " + cpfFormatado;
+                        var cpfFormatado = mascaraCPF(cpfTentativa);
+                        cpfsValidos.push("CPF válido encontrado: " + cpfFormatado);
                     }
                 }
             }
 
-            return "CPF válido não encontrado.";
+            if (cpfsValidos.length === 0) {
+                cpfsValidos.push("CPF válido não encontrado.");
+            }
+
+            return cpfsValidos;
         }
 
         function validaCPF(cpf) {
